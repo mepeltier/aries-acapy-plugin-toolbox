@@ -1,6 +1,7 @@
 aca-py start \
+    --admin 0.0.0.0 "$ADMINPORT" --admin-insecure-mode \
     -it acapy_plugin_toolbox.http_ws 0.0.0.0 "$PORT" \
-    -ot http \
+    -ot ws \
     -e "$ENDPOINT" "${ENDPOINT/http/ws}" \
     --label "$AGENT_NAME" \
     --auto-accept-requests --auto-ping-connection \

@@ -1,0 +1,15 @@
+version: "3"
+services:
+  ngrok-indicio-trainer:
+    image: wernight/ngrok
+    command: ngrok http agent-indicio-trainer:3005 --log stdout
+  agent-indicio-trainer:
+    build: .
+    environment:
+      NGROK_NAME: ngrok-indicio-trainer
+      AGENT_NAME: Indicio Trainer
+      PORT: 3008
+      ADMINPORT: 8154
+    ports:
+     - "3008:3008"
+     - "8154:8154"
