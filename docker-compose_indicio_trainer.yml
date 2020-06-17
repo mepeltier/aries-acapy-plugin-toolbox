@@ -2,7 +2,7 @@ version: "3"
 services:
   ngrok-indicio-trainer:
     image: wernight/ngrok
-    command: ngrok http agent-indicio-trainer:3005 --log stdout
+    command: ngrok http agent-indicio-trainer:3008 --log stdout
   agent-indicio-trainer:
     build: .
     environment:
