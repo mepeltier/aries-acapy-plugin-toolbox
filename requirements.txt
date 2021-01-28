@@ -1,4 +1,5 @@
 aries-cloudagent[indy]@git+https://github.com/hyperledger/aries-cloudagent-python@0.5.4
+aries-acapy-plugin-data-transfer@git+https://github.com/Indicio-tech/aries-acapy-plugin-data-transfer
 marshmallow==3.0.0
 flake8
 python-dateutil
