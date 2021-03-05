@@ -8,7 +8,7 @@ aca-py start \
     --auto-respond-credential-proposal --auto-respond-credential-offer --auto-respond-credential-request --auto-store-credential \
     --auto-respond-presentation-proposal --auto-respond-presentation-request --auto-verify-presentation \
     --invite --invite-role admin --invite-label "$AGENT_NAME (admin)" \
-    --genesis-url https://raw.githubusercontent.com/sovrin-foundation/sovrin/master/sovrin/pool_transactions_sandbox_genesis \
+    --genesis-url https://raw.githubusercontent.com/Indicio-tech/indicio-network/master/genesis_files/pool_transactions_testnet_genesis \
     --wallet-type indy \
     --plugin acapy_plugin_toolbox \
     --debug-connections \
