@@ -1,4 +1,4 @@
-aries-cloudagent[indy]@git+https://github.com/hyperledger/aries-cloudagent-python@0.5.4
+aries-cloudagent[indy]@git+https://github.com/Indicio-tech/aries-cloudagent-python@fix/backports
 aries-acapy-plugin-data-transfer@git+https://github.com/Indicio-tech/aries-acapy-plugin-data-transfer
 marshmallow==3.0.0
 flake8
