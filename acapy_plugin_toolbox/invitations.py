@@ -64,7 +64,7 @@ InvitationGetList, InvitationGetListSchema = generate_model_schema(
     handler='acapy_plugin_toolbox.invitations.InvitationGetListHandler',
     msg_type=INVITATION_GET_LIST,
     schema={
-
+        'creator': fields.List(fields.Str(), required=False),
     }
 )
 
@@ -76,6 +76,7 @@ CreateInvitation, CreateInvitationSchema = generate_model_schema(
         'label': fields.Str(required=False),
         'alias': fields.Str(required=False),  # default?
         'group': fields.Str(required=False),
+        'creator': fields.Str(required=False),
         'auto_accept': fields.Boolean(missing=False),
         'multi_use': fields.Boolean(missing=False),
         'mediation_id': fields.Str(required=False)
@@ -87,6 +88,7 @@ BaseInvitationSchema = Schema.from_dict({
     'label': fields.Str(required=False),
     'alias': fields.Str(required=False),  # default?
     'group': fields.Str(required=False),
+    'creator': fields.Str(required=False),
     'auto_accept': fields.Boolean(missing=False),
     'multi_use': fields.Boolean(missing=False),
     'invitation_url': fields.Str(required=True),
@@ -135,11 +137,16 @@ class CreateInvitationHandler(BaseHandler):
             await connection.metadata_set(
                 session, "group", context.message.group
             )
+        if context.message.creator:
+            await connection.metadata_set(
+                session, "creator", context.message.creator
+            )
         invite_response = Invitation(
             id=connection.connection_id,
             label=invitation.label,
             alias=connection.alias,
             group=context.message.group,
+            creator=context.message.creator,
             auto_accept=connection.accept == ConnRecord.ACCEPT_AUTO,
             multi_use=(
                 connection.invitation_mode ==
@@ -187,12 +194,17 @@ class InvitationGetListHandler(BaseHandler):
             except StorageNotFoundError:
                 continue
             group = await connection.metadata_get(session, 'group')
+            creator = await connection.metadata_get(session, 'creator')
+
+            if context.message.creator and creator not in context.message.creator:
+                continue
 
             invite = {
                 'id': connection.connection_id,
                 'label': invitation.label,
                 'alias': connection.alias,
                 'group': group,
+                'creator': creator,
                 'auto_accept': (
                     connection.accept == ConnRecord.ACCEPT_AUTO
                 ),
