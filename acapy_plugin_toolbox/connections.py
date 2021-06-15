@@ -7,7 +7,7 @@ import re
 from typing import Any, Dict
 
 from aries_cloudagent.connections.models.conn_record import ConnRecord
-from aries_cloudagent.core.profile import InjectionContext, Profile
+from aries_cloudagent.core.profile import InjectionContext, Profile, ProfileSession
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
 from aries_cloudagent.core.event_bus import Event, EventBus
 from aries_cloudagent.messaging.base_handler import (
@@ -84,7 +84,7 @@ async def connections_event_handler(profile: Profile, event: Event):
         async with profile.session() as session:
             await send_to_admins(
                 session,
-                Connected(**conn_record_to_message_repr(record)),
+                Connected(**await conn_record_to_message_repr(session, record)),
                 responder,
             )
 
@@ -101,6 +101,7 @@ BaseConnectionSchema = Schema.from_dict({
         ]),
         required=True
     ),
+    'creator': fields.Str(required=False),
     'their_did': fields.Str(required=False),  # May be missing if pending
     'raw_repr': fields.Dict(required=False)
 })
@@ -122,7 +123,7 @@ Connected, ConnectedSchema = generate_model_schema(
 )
 
 
-def conn_record_to_message_repr(conn: ConnRecord) -> Dict[str, Any]:
+async def conn_record_to_message_repr(session: ProfileSession, conn: ConnRecord) -> Dict[str, Any]:
     """Map ConnRecord onto Connection."""
     def _state_map(state: str) -> str:
         if state in ('active', 'response'):
@@ -131,10 +132,12 @@ def conn_record_to_message_repr(conn: ConnRecord) -> Dict[str, Any]:
             return 'error'
         return 'pending'
 
+    creator = await conn.metadata_get(session, 'creator')
     return {
         'label': conn.their_label,
         'my_did': conn.my_did,
         'their_did': conn.their_did,
+        'creator': creator,
         'state': _state_map(conn.state),
         'connection_id': conn.connection_id,
         'raw_repr': conn.serialize()
@@ -156,6 +159,7 @@ GetList, GetListSchema = generate_model_schema(
             required=False
         ),
         'their_did': fields.Str(required=False),
+        'creator': fields.List(fields.Str(), required=False),
     }
 )
 
@@ -195,10 +199,14 @@ class GetListHandler(BaseHandler):
         records = await ConnRecord.query(
             session, tag_filter, post_filter_negative=post_filter_negative
         )
-        results = [
-            Connection(**conn_record_to_message_repr(record))
-            for record in records
-        ]
+
+        results = []
+        for record in records:
+            result = Connection(**await conn_record_to_message_repr(session, record))
+            if context.message.creator and result.creator not in context.message.creator:
+                continue
+            results.append(result)
+
         connection_list = List(connections=results)
         connection_list.assign_thread_from(context.message)
         await responder.send_reply(connection_list)
@@ -239,7 +247,7 @@ class UpdateHandler(BaseHandler):
         connection.their_label = new_label
         await connection.save(session, reason="Update request received.")
         conn_response = Connection(
-            **conn_record_to_message_repr(connection)
+            **await conn_record_to_message_repr(session, connection)
         )
         conn_response.assign_thread_from(context.message)
         await responder.send_reply(conn_response)
@@ -312,6 +320,7 @@ ReceiveInvitation, ReceiveInvitationSchema = generate_model_schema(
             missing=False
         ),
         'mediation_id': fields.Str(required=False),
+        'creator': fields.Str(required=False),
     }
 )
 
@@ -330,5 +339,9 @@ class ReceiveInvitationHandler(BaseHandler):
             auto_accept=context.message.auto_accept,
             mediation_id=context.message.mediation_id,
         )
-        connection_resp = Connection(**conn_record_to_message_repr(connection))
+        if context.message.creator:
+            await connection.metadata_set(
+                session, "creator", context.message.creator
+            )
+        connection_resp = Connection(**await conn_record_to_message_repr(session, connection))
         await responder.send_reply(connection_resp)
