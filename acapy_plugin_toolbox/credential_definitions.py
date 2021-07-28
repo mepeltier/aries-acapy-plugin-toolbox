@@ -4,6 +4,7 @@
 # pylint: disable=too-few-public-methods
 
 from asyncio import shield
+import logging
 
 from marshmallow import fields
 
@@ -44,6 +45,8 @@ MESSAGE_TYPES = {
     CRED_DEF_LIST:
         'acapy_plugin_toolbox.credential_definitions.CredDefList',
 }
+
+LOGGER = logging.getLogger(__name__)
 
 
 
@@ -206,6 +209,7 @@ class SendCredDefHandler(BaseHandler):
                     )
                 )
         except Exception as err:
+            LOGGER.exception("Failed to send to ledger")
             report = ProblemReport(
                 explain_ltxt='Failed to send to ledger; Error: {}'.format(err),
                 who_retries='none'
