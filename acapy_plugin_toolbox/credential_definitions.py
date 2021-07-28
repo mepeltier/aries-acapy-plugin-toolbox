@@ -198,7 +198,7 @@ class SendCredDefHandler(BaseHandler):
 
         try:
             async with ledger:
-                credential_definition_id, credential_definition = await shield(
+                credential_definition_id, credential_definition, success = await shield(
                     ledger.create_and_send_credential_definition(
                         issuer,
                         context.message.schema_id,
