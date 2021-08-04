@@ -7,9 +7,9 @@ from aries_cloudagent.protocols.issue_credential.v1_0.manager import CredentialM
 from aries_cloudagent.protocols.issue_credential.v1_0.routes import (
     V10CredentialProposalRequestMandSchema as CredentialProposalRequestSchema,
 )
+from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
 from aries_cloudagent.storage.error import StorageNotFoundError
 
-from .... import ProblemReport
 from ....util import admin_only, expand_message_class, log_handling, with_generic_init
 from .base import AdminHolderMessage
 from .cred_exchange import CredExchange

@@ -16,7 +16,7 @@ auto-ping-connection: true
 connections-invite: true
 label: Aries Cloud Agent + Toolbox Plugin
 invite-label: ACA-Py (Admin)
-invite-metadata-json: '{"group": "admin"}'
+invite-metadata-json: '{"group": "admin", "roles": "admin"}'
 preserve-exchange-records: true
 auto-store-credential: true
 auto-respond-credential-proposal: true

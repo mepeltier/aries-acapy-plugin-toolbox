@@ -1,0 +1,20 @@
+{
+  "@context": [
+    "https://github.com/hyperledger/aries-rfcs/blob/master/concepts/0430-machine-readable-governance-frameworks/context.jsonld"
+  ],
+  "name": "ACA-Py Plugin Toolbox - Default Governance",
+  "version": "0.1",
+  "data_uri": "https://github.com/hyperledger/aries-acapy-plugin-toolbox/default.mrgf.json",
+  "description": "Default governance used by ACA-Py plugin toolbox to manage privileges of connections",
+  "roles": ["admin"],
+  "privileges": [
+    {
+      "name": "admin-connections",
+      "description": "Authorized to administrate connections",
+      "uri": "https://github.com/hyperledger/aries-acapy-plugin-toolbox/docs/mrgf/admin-connections"
+    }
+  ],
+  "rules": [
+    {"grant": ["admin-connections"], "when": {"roles": "admin"} }
+  ]
+}

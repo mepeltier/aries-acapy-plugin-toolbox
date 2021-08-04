@@ -7,9 +7,9 @@ import re
 from typing import Any, Dict
 
 from aries_cloudagent.connections.models.conn_record import ConnRecord
+from aries_cloudagent.core.event_bus import Event, EventBus
 from aries_cloudagent.core.profile import InjectionContext, Profile
 from aries_cloudagent.core.protocol_registry import ProtocolRegistry
-from aries_cloudagent.core.event_bus import Event, EventBus
 from aries_cloudagent.messaging.base_handler import (
     BaseHandler,
     BaseResponder,
@@ -23,6 +23,7 @@ from aries_cloudagent.protocols.problem_report.v1_0.message import ProblemReport
 from aries_cloudagent.storage.error import StorageNotFoundError
 from marshmallow import Schema, fields, validate
 
+from mrgf import Selector, request_handler_principal_finder
 from .util import admin_only, generate_model_schema, send_to_admins
 
 PROTOCOL = (
@@ -53,6 +54,9 @@ MESSAGE_TYPES = {
 }
 
 EVENT_PATTERN = re.compile(f"acapy::record::{ConnRecord.RECORD_TOPIC}::.*")
+
+
+selector = Selector(request_handler_principal_finder)
 
 
 async def setup(context: InjectionContext, protocol_registry: ProtocolRegistry = None):
@@ -165,10 +169,21 @@ List, ListSchema = generate_model_schema(
 class GetListHandler(BaseHandler):
     """Handler for get connection list request."""
 
-    @admin_only
+    @selector.select
     async def handle(self, context: RequestContext, responder: BaseResponder):
         """Handle get connection list request."""
+        report = ProblemReport(
+            description={
+                "en": "This connection is not authorized to perform"
+                " the requested action."
+            },
+            who_retries="none",
+        )
+        report.assign_thread_from(context.message)
+        await responder.send_reply(report)
 
+    @handle.register(lambda p: "admin-connections" in p.privileges)
+    async def admin_handle(self, context: RequestContext, responder: BaseResponder):
         session = await context.session()
         tag_filter = dict(
             filter(
