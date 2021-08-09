@@ -45,7 +45,7 @@ ADD https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 ./jq
 RUN chmod +x ./jq
 COPY startup.sh startup.sh
 RUN chmod +x ./startup.sh
-COPY ngrok-wait.sh wait.sh
+COPY agent-tunnel-wait.sh wait.sh
 RUN chmod +x ./wait.sh
 
 USER $user

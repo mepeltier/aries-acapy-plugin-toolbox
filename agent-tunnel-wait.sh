@@ -12,6 +12,6 @@ done
 ACAPY_ENDPOINT=$(curl --silent "${TUNNEL_HOST}:${TUNNEL_PORT}/start" | ./jq -r '.url')
 echo "fetched end point [$ACAPY_ENDPOINT]"
 
-export ACAPY_ENDPOINT="[$ACAPY_ENDPOINT, ${ACAPY_ENDPOINT/http/ws}]"
-#export ACAPY_ENDPOINT="$ACAPY_ENDPOINT"
+#export ACAPY_ENDPOINT="[$ACAPY_ENDPOINT, ${ACAPY_ENDPOINT/http/ws}]"
+export ACAPY_ENDPOINT="$ACAPY_ENDPOINT"
 exec "$@"
