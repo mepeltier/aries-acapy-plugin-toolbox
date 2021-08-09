@@ -1,19 +1,17 @@
 version: "3"
 services:
-  tunnel:
+  tunnel-mediator:
     image: agent-tunnel
     build: agent-tunnel
-    command: agent:3000 -p 4040
-    ports:
-      - 4040:4040
-  agent:
-    build: .
+    command: agent-mediator:3004 -p 4040
+  agent-mediator:
     image: acapy-toolbox-tunnel
     build:
       context: ../
       dockerfile: ./demo/Dockerfile.demo
     environment:
-      TUNNEL_HOST: tunnel
+      TUNNEL_HOST: tunnel-mediator
       TUNNEL_PORT: 4040
     ports:
-      - "3001:3001"
+      - "3005:3005"
+    command: poetry run aca-py start --arg-file ./configs/mediator.yml
