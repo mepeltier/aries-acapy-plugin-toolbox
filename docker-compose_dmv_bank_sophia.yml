@@ -1,12 +1,12 @@
 version: "3"
 services:
-  ngrok-sophia:
-    image: wernight/ngrok
-    command: ngrok http agent-sophia:3005 --log stdout
+  tunnel-sophia:
+    image: reflectivedevelopment/agent-tunnel
+    command: "agent-sophia:3005 -p 4040 --host ${AGENT_TUNNEL_HOST}"
   agent-sophia:
     build: .
     environment:
-      NGROK_NAME: ngrok-sophia
+      TUNNEL_HOST: tunnel-sophia
       AGENT_NAME: Sophia
       PORT: 3005
       ADMINPORT: 8150
@@ -14,13 +14,13 @@ services:
      - "3005:3005"
      - "8150:8150"
 
-  ngrok-dmv:
-    image: wernight/ngrok
-    command: ngrok http agent-dmv:3006 --log stdout
+  tunnel-dmv:
+    image: reflectivedevelopment/agent-tunnel
+    command: "agent-dmv:3006 -p 4040 --host ${AGENT_TUNNEL_HOST}"
   agent-dmv:
     build: .
     environment:
-      NGROK_NAME: ngrok-dmv
+      TUNNEL_HOST: tunnel-dmv
       AGENT_NAME: DMV
       PORT: 3006
       ADMINPORT: 8151
@@ -28,13 +28,13 @@ services:
      - "3006:3006"
      - "8151:8151"
 
-  ngrok-bank:
-    image: wernight/ngrok
-    command: ngrok http agent-bank:3007 --log stdout
+  tunnel-bank:
+    image: reflectivedevelopment/agent-tunnel
+    command: "agent-bank:3007 -p 4040 --host ${AGENT_TUNNEL_HOST}"
   agent-bank:
     build: .
     environment:
-      NGROK_NAME: ngrok-bank
+      TUNNEL_HOST: tunnel-bank
       AGENT_NAME: Bank
       PORT: 3007
       ADMINPORT: 8152
