@@ -1,12 +1,13 @@
 version: "3"
 services:
-  ngrok-indicio-trainer:
-    image: wernight/ngrok
-    command: ngrok http agent-indicio-trainer:3008 --log stdout
+  tunnel-inidico-trainer:
+    image: reflectivedevelopment/agent-tunnel
+    command: "agent-indicio-trainer:3008 -p 4040 --host ${AGENT_TUNNEL_HOST}"
   agent-indicio-trainer:
     build: .
     environment:
       NGROK_NAME: ngrok-indicio-trainer
+      TUNNEL_HOST: tunnel-inidico-trainer
       AGENT_NAME: Indicio Trainer
       PORT: 3008
       ADMINPORT: 8154
