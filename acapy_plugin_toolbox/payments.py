@@ -26,7 +26,7 @@ from aries_cloudagent.wallet.base import BaseWallet
 from .util import generate_model_schema, admin_only
 
 # TODO: Find a better way to find the library
-LIBRARY = os.environ.get('LIBSOVTOKEN', 'libsovtoken.so')
+#LIBRARY = os.environ.get('LIBSOVTOKEN', 'libsovtoken.so')
 SOV_METHOD = 'sov'
 # LIBRARY = 'libsovtoken'
 EXTENSION = {
@@ -75,7 +75,7 @@ async def setup(
     """Load plugin."""
 
     # Load in libsovtoken
-    cdll.LoadLibrary(LIBRARY).sovtoken_init()
+    #cdll.LoadLibrary(LIBRARY).sovtoken_init()
 
     if not protocol_registry:
         protocol_registry = await context.inject(ProtocolRegistry)
