@@ -1,0 +1,43 @@
+version: "3"
+services:
+  ngrok-sophia:
+    image: wernight/ngrok
+    command: ngrok http agent-sophia:3005 --log stdout
+  agent-sophia:
+    build: .
+    environment:
+      NGROK_NAME: ngrok-sophia
+      AGENT_NAME: Sophia
+      PORT: 3006
+      ADMINPORT: 8150
+    ports:
+     - "3006:3006"
+     - "8150:8150"
+
+  ngrok-dmv:
+    image: wernight/ngrok
+    command: ngrok http agent-dmv:3006 --log stdout
+  agent-dmv:
+    build: .
+    environment:
+      NGROK_NAME: ngrok-dmv
+      AGENT_NAME: DMV
+      PORT: 3007
+      ADMINPORT: 8151
+    ports:
+     - "3007:3007"
+     - "8151:8151"
+
+  ngrok-bank:
+    image: wernight/ngrok
+    command: ngrok http agent-bank:3007 --log stdout
+  agent-bank:
+    build: .
+    environment:
+      NGROK_NAME: ngrok-bank
+      AGENT_NAME: Bank
+      PORT: 3008
+      ADMINPORT: 8152
+    ports:
+     - "3008:3008"
+     - "8152:8152"
